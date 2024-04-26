@@ -21,6 +21,14 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().file_name",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat('bronze/',dataset().file_name,'/',formatDateTime(utcnow(),'yyyyMMdd'))",
+					"type": "Expression"
+				},
 				"fileSystem": "formulaOne"
 			}
 		},
