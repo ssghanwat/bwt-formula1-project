@@ -1,0 +1,29 @@
+{
+	"name": "ds_api_data",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_bwtformula1dlgen2_storage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"file_name": {
+				"type": "string"
+			},
+			"directory_path": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "formula-1"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "formulaOne"
+			}
+		},
+		"schema": {}
+	}
+}
