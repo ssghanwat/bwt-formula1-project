@@ -8,9 +8,6 @@
 		"parameters": {
 			"file_name": {
 				"type": "string"
-			},
-			"directory_path": {
-				"type": "string"
 			}
 		},
 		"folder": {
@@ -22,14 +19,14 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": {
-					"value": "@dataset().file_name",
+					"value": "@concat(dataset().file_name,'.json')",
 					"type": "Expression"
 				},
 				"folderPath": {
 					"value": "@concat('bronze/',dataset().file_name,'/',formatDateTime(utcnow(),'yyyyMMdd'))",
 					"type": "Expression"
 				},
-				"fileSystem": "formulaOne"
+				"fileSystem": "formulaone"
 			}
 		},
 		"schema": {}
