@@ -1,17 +1,14 @@
 {
-	"name": "ds_api_data",
+	"name": "ds_json",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_bwtformula1dlgen2_storage",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"file_name": {
+			"filename": {
 				"type": "string"
 			}
-		},
-		"folder": {
-			"name": "formula-1"
 		},
 		"annotations": [],
 		"type": "Json",
@@ -19,11 +16,11 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": {
-					"value": "@concat(dataset().file_name, '.json')",
+					"value": "@dataset().filename",
 					"type": "Expression"
 				},
 				"folderPath": {
-					"value": "@concat('bronze/season/',formatDateTime(utcnow(),'yyyyMMdd'))",
+					"value": "@concat('bronze/race/',formatDateTime(utcnow(),'yyyyMMdd'))",
 					"type": "Expression"
 				},
 				"fileSystem": "formulaone"

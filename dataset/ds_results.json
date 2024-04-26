@@ -1,0 +1,123 @@
+{
+	"name": "ds_results",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_bwtformula1dlgen2_storage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"FileName": {
+				"type": "string"
+			},
+			"DirectoryPath": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().FileName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().DirectoryPath",
+					"type": "Expression"
+				},
+				"fileSystem": "formulaone"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"MRData": {
+					"type": "object",
+					"properties": {
+						"xmlns": {
+							"type": "string"
+						},
+						"series": {
+							"type": "string"
+						},
+						"url": {
+							"type": "string"
+						},
+						"limit": {
+							"type": "string"
+						},
+						"offset": {
+							"type": "string"
+						},
+						"total": {
+							"type": "string"
+						},
+						"RaceTable": {
+							"type": "object",
+							"properties": {
+								"season": {
+									"type": "string"
+								},
+								"Races": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"season": {
+												"type": "string"
+											},
+											"round": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											},
+											"raceName": {
+												"type": "string"
+											},
+											"Circuit": {
+												"type": "object",
+												"properties": {
+													"circuitId": {
+														"type": "string"
+													},
+													"url": {
+														"type": "string"
+													},
+													"circuitName": {
+														"type": "string"
+													},
+													"Location": {
+														"type": "object",
+														"properties": {
+															"lat": {
+																"type": "string"
+															},
+															"long": {
+																"type": "string"
+															},
+															"locality": {
+																"type": "string"
+															},
+															"country": {
+																"type": "string"
+															}
+														}
+													}
+												}
+											},
+											"date": {
+												"type": "string"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
