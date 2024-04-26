@@ -1,0 +1,31 @@
+{
+	"name": "ds_bwtformula1dlgen2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ds_bwtformula1adlgen2_sink",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"fileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().fileName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat('bronze/','season/',formatDateTime(utcnow(),'yyyyMMdd'))",
+					"type": "Expression"
+				},
+				"fileSystem": "formulaone"
+			}
+		},
+		"schema": {}
+	}
+}

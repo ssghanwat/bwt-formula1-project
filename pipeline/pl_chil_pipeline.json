@@ -1,0 +1,150 @@
+{
+	"name": "pl_chil_pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "act_foreach_iterating_over_race_result",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.results_data",
+						"type": "Expression"
+					},
+					"batchCount": 25,
+					"activities": [
+						{
+							"name": "act_set_season_year",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "season_year",
+								"value": {
+									"value": "@item().season",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "act_set_round",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "round",
+								"value": {
+									"value": "@item().round",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "act_copy_result_data_to_adlsgen2",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "act_set_season_year",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "act_set_round",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "JsonSource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "JsonReadSettings"
+									}
+								},
+								"sink": {
+									"type": "JsonSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings",
+										"copyBehavior": "MergeFiles"
+									},
+									"formatSettings": {
+										"type": "JsonWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "ds_http",
+									"type": "DatasetReference",
+									"parameters": {
+										"RelativURL": {
+											"value": "@concat(variables('season_year'),'/',variables('round'),'/','results.json')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ds_result_dataset",
+									"type": "DatasetReference",
+									"parameters": {
+										"FileName": {
+											"value": "@concat(variables('season_year'),'_',variables('round'))",
+											"type": "Expression"
+										},
+										"DirectoryPath": {
+											"value": "@concat('bronze/results/',formatDateTime(utcnow(),'yyyyMMdd'))",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"results_data": {
+				"type": "array"
+			}
+		},
+		"variables": {
+			"season": {
+				"type": "String"
+			},
+			"round": {
+				"type": "String"
+			},
+			"season_year": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,34 @@
+{
+	"name": "ds_result_dataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ds_bwtformula1adlgen2_sink",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"FileName": {
+				"type": "string"
+			},
+			"DirectoryPath": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().FileName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().DirectoryPath",
+					"type": "Expression"
+				},
+				"fileSystem": "formulaone"
+			}
+		},
+		"schema": {}
+	}
+}

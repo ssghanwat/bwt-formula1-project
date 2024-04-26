@@ -1,0 +1,31 @@
+{
+	"name": "ds_dataset2_race",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ds_bwtformula1adlgen2_sink",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"file_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().file_name",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat('bronze/race/',formatDateTime(utcnow(),'yyyyMMdd'))",
+					"type": "Expression"
+				},
+				"fileSystem": "formulaone"
+			}
+		},
+		"schema": {}
+	}
+}
