@@ -1,9 +1,0 @@
-{
-	"name": "adf-formula1-bwt",
-	"location": "centralindia",
-	"identity": {
-		"type": "SystemAssigned",
-		"principalId": "d1386d84-ef26-46f2-91d8-8b64bcc3b240",
-		"tenantId": "0bf34d1b-a22c-481f-8f25-c575d7bfd1af"
-	}
-}
