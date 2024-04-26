@@ -1,0 +1,12 @@
+{
+	"name": "ds_bwtformula1adlgen2_sink",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://bwtformula1dlgen2.dfs.core.windows.net/",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEY1NTA1OUYwLTEzMzktNDQyMy04RjEyLTM2REE3NzQzODI2RF81YzQzMWYwZS00MDI4LTQ3NjEtOTUzYy1kNTJmNmMwNWQ3YjMiDQp9"
+		}
+	}
+}
