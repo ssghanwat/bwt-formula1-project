@@ -6,7 +6,7 @@
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"RelativeURL": {
+			"ds_param_RelativeURL": {
 				"type": "string"
 			}
 		},
@@ -14,7 +14,11 @@
 		"type": "Json",
 		"typeProperties": {
 			"location": {
-				"type": "HttpServerLocation"
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@dataset().ds_param_RelativeURL",
+					"type": "Expression"
+				}
 			}
 		},
 		"schema": {}

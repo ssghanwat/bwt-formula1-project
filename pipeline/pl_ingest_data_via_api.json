@@ -25,16 +25,92 @@
 							"type": "JsonReadSettings"
 						}
 					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
 					"enableStaging": false
 				},
 				"inputs": [
 					{
 						"referenceName": "ds_http_api",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_param_RelativeURL": {
+								"value": "@concat(pipeline().parameters.pl_param_RelativeURL,'.json?limit=1000')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_bwtformula1dlgen2_sink",
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_param_fileName": {
+								"value": "@concat(pipeline().parameters.pl_param_RelativeURL,'.json')",
+								"type": "Expression"
+							}
+						}
 					}
 				]
+			},
+			{
+				"name": "act lookup seasons",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Copy season file",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "ds_bwtformula1dlgen2_sink",
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_param_fileName": {
+								"value": "@activity('Copy season file').output.value[0].MRData.SeasonTable.Seasons",
+								"type": "Expression"
+							}
+						}
+					},
+					"firstRowOnly": false
+				}
 			}
 		],
+		"parameters": {
+			"pl_param_RelativeURL": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "formula1-ingestion"
 		},
