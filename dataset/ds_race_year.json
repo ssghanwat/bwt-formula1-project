@@ -1,12 +1,12 @@
 {
-	"name": "ds_bwtformula1dlgen2_sink",
+	"name": "ds_race_year",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ds_bwtformula1adlgen2_sink",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"ds_param_fileName": {
+			"ds_param_FileName": {
 				"type": "string"
 			}
 		},
@@ -16,11 +16,11 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": {
-					"value": "@concat(dataset().ds_param_fileName,'.json')",
+					"value": "@dataset().ds_param_FileName",
 					"type": "Expression"
 				},
 				"folderPath": {
-					"value": "@concat('bronze/seasons/',formatDateTime(utcnow(),'yyyyMMdd'))",
+					"value": "@concat('bronze/race/',formatDateTime(utcnow(),'yyyyMMdd'))",
 					"type": "Expression"
 				},
 				"fileSystem": "formulaone"

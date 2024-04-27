@@ -41,10 +41,7 @@
 						"referenceName": "ds_http_api",
 						"type": "DatasetReference",
 						"parameters": {
-							"ds_param_RelativeURL": {
-								"value": "@concat(pipeline().parameters.pl_param_RelativeURL,'.json?limit=1000')",
-								"type": "Expression"
-							}
+							"ds_param_RelativeURL": "seasons.json?limit=1000"
 						}
 					}
 				],
@@ -53,16 +50,13 @@
 						"referenceName": "ds_bwtformula1dlgen2_sink",
 						"type": "DatasetReference",
 						"parameters": {
-							"ds_param_fileName": {
-								"value": "@concat(pipeline().parameters.pl_param_RelativeURL,'.json')",
-								"type": "Expression"
-							}
+							"ds_param_fileName": "season"
 						}
 					}
 				]
 			},
 			{
-				"name": "act lookup seasons",
+				"name": "act lookup season",
 				"type": "Lookup",
 				"dependsOn": [
 					{
@@ -86,6 +80,11 @@
 						"storeSettings": {
 							"type": "AzureBlobFSReadSettings",
 							"recursive": true,
+							"wildcardFolderPath": {
+								"value": "@concat('bronze/seasons/',formatDateTime(utcnow(),'yyyyMMdd'))",
+								"type": "Expression"
+							},
+							"wildcardFileName": "*",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
@@ -96,21 +95,188 @@
 						"referenceName": "ds_bwtformula1dlgen2_sink",
 						"type": "DatasetReference",
 						"parameters": {
-							"ds_param_fileName": {
-								"value": "@activity('Copy season file').output.value[0].MRData.SeasonTable.Seasons",
+							"ds_param_fileName": "season"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "act iterate seasons for race",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "act lookup season",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('act lookup season').output.value[0].MRData.SeasonTable.Seasons",
+						"type": "Expression"
+					},
+					"batchCount": 25,
+					"activities": [
+						{
+							"name": "act copy race year",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "JsonSource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "JsonReadSettings"
+									}
+								},
+								"sink": {
+									"type": "JsonSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "JsonWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "ds_http_api",
+									"type": "DatasetReference",
+									"parameters": {
+										"ds_param_RelativeURL": {
+											"value": "@concat(item().season,'.json')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ds_race_year",
+									"type": "DatasetReference",
+									"parameters": {
+										"ds_param_FileName": {
+											"value": "@concat('')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "act lookup race year",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "act iterate seasons for race",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFolderPath": {
+								"value": "@concat('bronze/race/',formatDateTime(utcnow(),'yyyyMMdd'))",
+								"type": "Expression"
+							},
+							"wildcardFileName": "*",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "ds_race_year",
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_param_FileName": {
+								"value": "@concat('')",
 								"type": "Expression"
 							}
 						}
 					},
 					"firstRowOnly": false
 				}
+			},
+			{
+				"name": "act iterate races for race rounds",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "act lookup race year",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('act lookup race year').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"batchCount": 25,
+					"activities": [
+						{
+							"name": "act execute child pipeline",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "pl_child_pipeline",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"year_list": {
+										"value": "@item().MRData.RaceTable.Race",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
 			}
 		],
-		"parameters": {
-			"pl_param_RelativeURL": {
-				"type": "string"
-			}
-		},
 		"folder": {
 			"name": "formula1-ingestion"
 		},
